@@ -26,6 +26,9 @@ public:
 	void draw(sf::RenderWindow *window);
 	void setEndPos(sf::Vector2i pos);
 	void changeTile(sf::Vector2i pos, Tile tile);
+	void drawOpenList(sf::RenderWindow *window);
+	void drawClosedList(sf::RenderWindow *window);
+	void wipe();
 private:
 	Cost getCost(sf::Vector2i tile, float costG);
 	std::list<pNode> openList;

@@ -34,12 +34,15 @@ void Pathfinding::draw(sf::RenderWindow * window)
 		}
 	}
 
+
 	for (auto it = path.begin(); it != path.end(); it++)
 	{
 		rect.setPosition(it->x*tileSize, it->y*tileSize);
-		rect.setFillColor(sf::Color::Red);
+		rect.setFillColor(sf::Color::Green);
 		window->draw(rect);
 	}
+
+
 
 	rect.setPosition(startPos.x*tileSize,startPos.y*tileSize);
 	rect.setFillColor(sf::Color::Blue);
@@ -59,6 +62,42 @@ void Pathfinding::setEndPos(sf::Vector2i pos)
 void Pathfinding::changeTile(sf::Vector2i pos, Tile tile)
 {
 	map[pos.x][pos.y] = tile;
+}
+void Pathfinding::drawOpenList(sf::RenderWindow * window)
+{
+	sf::RectangleShape rect;
+	rect.setOutlineColor(sf::Color::Black);
+	rect.setSize(sf::Vector2f(tileSize - 1, tileSize - 1));
+	for (auto it = openList.begin(); it != openList.end(); it++)
+	{
+		rect.setPosition((it->point.x)*tileSize, (it->point.y)*tileSize);
+		rect.setFillColor(sf::Color::Yellow);
+		window->draw(rect);
+	}
+}
+void Pathfinding::drawClosedList(sf::RenderWindow * window)
+{
+	sf::RectangleShape rect;
+	rect.setOutlineColor(sf::Color::Black);
+	rect.setSize(sf::Vector2f(tileSize - 1, tileSize - 1));
+	for (auto it = closedList.begin(); it != closedList.end(); it++)
+	{
+		rect.setPosition((it->point.x)*tileSize, (it->point.y)*tileSize);
+		rect.setFillColor(sf::Color::Red);
+		window->draw(rect);
+	}
+}
+void Pathfinding::wipe()
+{
+	for (int x = 0; x < map.size(); x++)
+	{
+		for (int y = 0; y < map[x].size(); y++)
+			map[x][y] = Tile::EMPTY;
+	}
+	openList.clear();
+	closedList.clear();
+	path.clear();
+
 }
 Cost Pathfinding::getCost(sf::Vector2i tile, float costG)
 {
@@ -123,12 +162,20 @@ void Pathfinding::findPath()
 		pNode leftNode{ sf::Vector2i(tile.x - 1, tile.y),tile, 0 };
 		pNode rightNode{ sf::Vector2i(tile.x + 1, tile.y),tile, 0 };
 		pNode topNode{ sf::Vector2i(tile.x, tile.y - 1),tile, 0 };
+
 		pNode bottomNode{ sf::Vector2i(tile.x, tile.y + 1),tile, 0 };
+		pNode bottomLeftNode{ sf::Vector2i(tile.x-1, tile.y - 1),tile, 0 };
+		pNode bottomRightNode{ sf::Vector2i(tile.x +1, tile.y - 1),tile, 0 };
+		pNode topLeftNode{ sf::Vector2i(tile.x - 1, tile.y +1),tile, 0 };
+		pNode topRightNode{ sf::Vector2i(tile.x + 1, tile.y + 1),tile, 0 };
 		temp.push_back(leftNode);
 		temp.push_back(topNode);
 		temp.push_back(rightNode);
 		temp.push_back(bottomNode);
-		int WALL = 2;
+		temp.push_back(bottomLeftNode);
+		temp.push_back(bottomRightNode);
+		temp.push_back(topLeftNode);
+		temp.push_back(topRightNode);
 		for (auto it = temp.begin(); it != temp.end(); it++)
 		{
 			if (!isWall(it->point) && std::find(closedList.begin(), closedList.end(), *it) == closedList.end())

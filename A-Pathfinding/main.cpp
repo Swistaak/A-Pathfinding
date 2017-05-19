@@ -14,6 +14,8 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
+		window.clear();
+		pathfinding->draw(&window);
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
 			sf::Vector2i pos = sf::Mouse::getPosition(window);
@@ -42,9 +44,12 @@ int main()
 				time = clock.getElapsedTime();
 			}
 		}
-		
-		window.clear();
-		pathfinding->draw(&window);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+			pathfinding->drawClosedList(&window);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
+			pathfinding->drawOpenList(&window);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			pathfinding->wipe();
 		window.display();
 	}
 
